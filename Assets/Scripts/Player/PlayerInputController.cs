@@ -16,6 +16,8 @@ public class PlayerInputController : MonoBehaviour
         playerController = GetComponent<PlayerController>();
         fishing = GetComponent<Fishing>();
     }
+
+    // Each On____ method corresponds to a input Action.
     private void OnMove(InputValue inputValue)
     {
         if (isMoveMode)

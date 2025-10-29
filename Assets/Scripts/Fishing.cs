@@ -4,8 +4,10 @@ public class Fishing : MonoBehaviour
 {
     public GameObject timerRing;
     public GameObject fishingUI;
+    public GameObject[] fishLogEntries;
+    public int fishNum;
     public float scratchTimer;
-    public bool hasScratchPrompted;
+    private bool hasScratchPrompted;
     public bool isFishMode;
     private Vector2 originalRingSize;
 
@@ -14,8 +16,11 @@ public class Fishing : MonoBehaviour
     
     void Awake()
     {
+        // finds the respective scripts within this script's GameObject.
         controller = GetComponent<PlayerController>();
         inputController = GetComponent<PlayerInputController>();
+
+        // Sets all variables to needed values.
         scratchTimer = Random.Range(5, 10);
         hasScratchPrompted = false;
         timerRing.SetActive(false);
@@ -57,6 +62,7 @@ public class Fishing : MonoBehaviour
     {
         fishingUI.SetActive(true);
         isFishMode = true;
+        fishNum = Random.Range(0, 2);
     }
     public void StopFishing()
     {
