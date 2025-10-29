@@ -18,6 +18,7 @@ public class Fishing : MonoBehaviour
         inputController = GetComponent<PlayerInputController>();
         scratchTimer = Random.Range(5, 10);
         hasScratchPrompted = false;
+        timerRing.SetActive(false);
         originalRingSize = timerRing.GetComponent<RectTransform>().sizeDelta;
         isFishMode = false;
     }
@@ -35,7 +36,9 @@ public class Fishing : MonoBehaviour
         }
         else if (scratchTimer <= 3)
         {
-            timerRing.GetComponent<RectTransform>().sizeDelta = new Vector2(timerRing.GetComponent<RectTransform>().sizeDelta.x - Time.deltaTime, timerRing.GetComponent<RectTransform>().sizeDelta.y - Time.deltaTime);
+            float ringWidth = timerRing.GetComponent<RectTransform>().sizeDelta.x;
+            float ringHeight = timerRing.GetComponent<RectTransform>().sizeDelta.y;
+            timerRing.GetComponent<RectTransform>().sizeDelta = new Vector2(ringWidth - (ringHeight * Time.deltaTime), ringHeight - (ringHeight * Time.deltaTime));
         }
         if (scratchTimer <= 0)
         {

@@ -49,7 +49,18 @@
                 {
                     "name": "left",
                     "id": "4e2f611b-6578-4d4d-a0c9-d3c4afb55938",
-                    "path": "<Mouse>/delta/up",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "af15a222-be69-40df-9d93-6f9ae346484a",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -60,7 +71,18 @@
                 {
                     "name": "right",
                     "id": "0ae782d4-1823-44c3-8d07-420efbd6f6bd",
-                    "path": "<Mouse>/delta/down",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "84dbe2a7-6cf2-45b0-a6dd-44bd8fec8aea",
+                    "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -71,7 +93,7 @@
                 {
                     "name": "forward",
                     "id": "722014bc-864a-476e-80ff-2cea87ba1921",
-                    "path": "<Keyboard>/w",
+                    "path": "<Mouse>/delta/up",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -82,7 +104,7 @@
                 {
                     "name": "backward",
                     "id": "c31eb6fc-d7db-49de-a7d5-d9a427120f29",
-                    "path": "<Keyboard>/s",
+                    "path": "<Mouse>/delta/down",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
