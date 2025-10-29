@@ -2251,6 +2251,7 @@ GameObject:
   - component: {fileID: 1692573420}
   - component: {fileID: 1692573421}
   - component: {fileID: 1692573422}
+  - component: {fileID: 1692573423}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2339,6 +2340,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputController
   isMoveMode: 0
+--- !u!114 &1692573423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1692573418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d517c128fe8412c4daf1d2e552b90bfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  scratchTimer: 0
+  hasScratchPrompted: 0
 --- !u!1 &2055322523
 GameObject:
   m_ObjectHideFlags: 0
