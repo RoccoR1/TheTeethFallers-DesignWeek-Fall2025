@@ -43,34 +43,42 @@ public class Fishing : MonoBehaviour
         if (isFishMode)
         {
             scratchTimer -= Time.deltaTime;
-        }
-        
-        // Start the record scratch prompt.
-        if (scratchTimer <= 3 && !hasScratchPrompted)
-        {
-            timerRing.SetActive(true);
-            hasScratchPrompted = true;
-        }
-        else if (scratchTimer <= scratchTimerStart)
-        {
-            float ringWidth = timerRing.GetComponent<RectTransform>().sizeDelta.x;
-            float ringHeight = timerRing.GetComponent<RectTransform>().sizeDelta.y;
-            timerRing.GetComponent<RectTransform>().sizeDelta = new Vector2(ringWidth - (ringHeight * Time.deltaTime), ringHeight - (ringHeight * Time.deltaTime));
-            
-            // Check for if the player correctly scratches the disk
-            if (inputController.movementInputVector.z < 0)
-            {
-                ResetTimer();
-            }
-        }
+            minigameTimer -= Time.deltaTime;
 
-        if (scratchTimer <= 0)
-        {
-            Fail();
+
+            // Start the record scratch prompt.
+            if (scratchTimer <= 3 && !hasScratchPrompted)
+            {
+                timerRing.SetActive(true);
+                hasScratchPrompted = true;
+            }
+            else if (scratchTimer <= scratchTimerStart)
+            {
+                float ringWidth = timerRing.GetComponent<RectTransform>().sizeDelta.x;
+                float ringHeight = timerRing.GetComponent<RectTransform>().sizeDelta.y;
+                timerRing.GetComponent<RectTransform>().sizeDelta = new Vector2(ringWidth - (ringHeight * Time.deltaTime), ringHeight - (ringHeight * Time.deltaTime));
+
+                // Check for if the player correctly scratches the disk
+                if (inputController.movementInputVector.z < 0)
+                {
+                    ResetScratchPrompt();
+                }
+            }
+
+            if (scratchTimer <= 0)
+            {
+                Debug.Log("Fail!");
+                Fail();
+            }
+            if (minigameTimer <= 0)
+            {
+                Debug.Log("Success!");
+                Success();
+            }
         }
     }
 
-    public void ResetTimer()
+    public void ResetScratchPrompt()
     {
         scratchTimer = Random.Range(5, 10);
         hasScratchPrompted = false;
@@ -89,21 +97,26 @@ public class Fishing : MonoBehaviour
         if (fishNum == 0)
         {
             scratchTimerStart = 3;
+            minigameTimer = 15;
         }
         // Medium
         else if (fishNum == 1)
         {
             scratchTimerStart = 2.5f;
+            minigameTimer = 15;
         }
         // Hard
         else if (fishNum == 2)
         {
             scratchTimerStart = 2;
+            minigameTimer = 20;
         }
+
+        
     }
     public void StopFishing()
     {
-        ResetTimer();
+        ResetScratchPrompt();
         fishingUI.SetActive(false);
         isFishMode = false;
         inputController.isMoveMode = true;
@@ -114,15 +127,15 @@ public class Fishing : MonoBehaviour
         //
         // Display a fail popup
         //
-        fishLogEntries[fishNum].SetActive(true);
-        StopFishing();
-        //Invoke("StopFishing", 3);
+        isFishMode = false;
+        Invoke("StopFishing", 3);
     }
     public void Success()
     {
         //
         // Display a Success popup
         //
+        isFishMode = false;
         fishLogEntries[fishNum].SetActive(true);
         Invoke("StopFishing", 3);
     }

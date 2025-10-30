@@ -20,10 +20,10 @@ public class PlayerInputController : MonoBehaviour
     // Each On____ method corresponds to a input Action.
     private void OnMove(InputValue inputValue)
     {
-        if (isMoveMode)
-        {
+        //if (isMoveMode)
+        //{
             movementInputVector = inputValue.Get<Vector3>();
-        }
+        //}
     }
     private void OnChangeMode(InputValue inputValue)
     {
