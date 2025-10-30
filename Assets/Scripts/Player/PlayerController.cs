@@ -6,7 +6,8 @@ public class PlayerController : MonoBehaviour
     public Camera playerCamera;
     public GameObject fishLogCanvas;
     public Transform playerPos;
-    
+    public AudioSource music;
+
     [SerializeField]
     private float moveSpeed;
     [SerializeField]
@@ -21,6 +22,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        //music.Play();
+
         // Keeps camera aligned with boat.
         playerCamera.gameObject.GetComponent<Transform>().position = new Vector3(playerPos.position.x, playerPos.position.y + 1.75f, playerPos.position.z);
         playerCamera.gameObject.GetComponent<Transform>().rotation = playerPos.rotation;
