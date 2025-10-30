@@ -52,11 +52,8 @@ public class Fishing : MonoBehaviour
             scratchTimer -= Time.deltaTime;
             minigameTimer -= Time.deltaTime;
 
-            // Record player's motion if record scratch prompt isnt active.
-            //if (!hasScratchPrompted)
-            //{
-                CheckRotation();
-            //}
+            CheckRotation();
+
             // Start the record scratch prompt.
             if (scratchTimer <= 3 && !hasScratchPrompted)
             {
