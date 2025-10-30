@@ -5,7 +5,8 @@ public class Fishing : MonoBehaviour
     public GameObject fishingRod;
     public GameObject timerRing;
     public GameObject fishingUI;
-    
+    public GameObject rotateRightSymbol;
+    public GameObject rotateLeftSymbol;
     // Determines which fish is currently being pulled in 
     public int fishNum;
     
@@ -13,7 +14,7 @@ public class Fishing : MonoBehaviour
     public float scratchTimer;
 
     // Determines when the countdown starts for the scratch timer.
-    private float scratchTimerStart;
+    private float scratchStartPromptTime;
     [SerializeField]
     private float minigameTimer;
     private bool hasScratchPrompted;
@@ -52,37 +53,39 @@ public class Fishing : MonoBehaviour
             minigameTimer -= Time.deltaTime;
 
             // Record player's motion if record scratch prompt isnt active.
-            if (!hasScratchPrompted)
-            {
+            //if (!hasScratchPrompted)
+            //{
                 CheckRotation();
-            }
+            //}
             // Start the record scratch prompt.
             if (scratchTimer <= 3 && !hasScratchPrompted)
             {
                 timerRing.SetActive(true);
                 hasScratchPrompted = true;
+                spinTimeSample = scratchTimer;
+                wheelRotationDuringSample = 0;
+                rotateLeftSymbol.SetActive(true);
+                rotateRightSymbol.SetActive(false);
             }
-            else if (scratchTimer <= scratchTimerStart)
+            else if (scratchTimer <= scratchStartPromptTime)
             {
                 float ringWidth = timerRing.GetComponent<RectTransform>().sizeDelta.x;
                 float ringHeight = timerRing.GetComponent<RectTransform>().sizeDelta.y;
                 timerRing.GetComponent<RectTransform>().sizeDelta = new Vector2(ringWidth - (ringHeight * Time.deltaTime), ringHeight - (ringHeight * Time.deltaTime));
 
                 // Check for if the player correctly scratches the disk
-                if (inputController.movementInputVector.z < 0)
-                {
-                    ResetScratchPrompt();
-                }
+                //if (inputController.movementInputVector.z < 0)
+                //{
+                //    ResetScratchPrompt();
+                //}
             }
 
             if (scratchTimer <= 0)
             {
-                Debug.Log("Fail!");
                 Fail();
             }
             if (minigameTimer <= 0)
             {
-                Debug.Log("Success!");
                 Success();
             }
         }
@@ -95,10 +98,24 @@ public class Fishing : MonoBehaviour
         Debug.Log(wheelRotationDuringSample);
         if (spinTimeSample <= 0)
         {
-            // Statement checks to see if the rotation value is within the required range.
-            if (wheelRotationDuringSample <= wheelMinSpinPer || wheelRotationDuringSample >= wheelMaxSpinPer)
+            if (!hasScratchPrompted)
             {
-                Fail();
+                // Statement checks to see if the rotation value is within the required range.
+                if (wheelRotationDuringSample <= wheelMinSpinPer || wheelRotationDuringSample >= wheelMaxSpinPer)
+                {
+                    Fail();
+                }
+            }
+            else
+            {
+                if (wheelRotationDuringSample > 0)
+                {
+                    Fail();
+                }
+                else
+                {
+                    ResetScratchPrompt();
+                }
             }
             spinTimeSample = 4;
             wheelRotationDuringSample = 0;
@@ -111,6 +128,8 @@ public class Fishing : MonoBehaviour
         hasScratchPrompted = false;
         timerRing.SetActive(false);
         timerRing.GetComponent<RectTransform>().sizeDelta = originalRingSize;
+        rotateLeftSymbol.SetActive(false);
+        rotateRightSymbol.SetActive(true);
     }
     public void StartFishing()
     {
@@ -123,7 +142,7 @@ public class Fishing : MonoBehaviour
         // Easy
         if (fishNum == 0)
         {
-            scratchTimerStart = 3;
+            scratchStartPromptTime = 3;
             minigameTimer = 15;
             wheelMinSpinPer = 1;
             wheelMaxSpinPer = 20000;
@@ -131,7 +150,7 @@ public class Fishing : MonoBehaviour
         // Medium
         else if (fishNum == 1)
         {
-            scratchTimerStart = 2.5f;
+            scratchStartPromptTime = 2.5f;
             minigameTimer = 15;
             wheelMinSpinPer = 1;
             wheelMaxSpinPer = 20000;
@@ -139,7 +158,7 @@ public class Fishing : MonoBehaviour
         // Hard
         else if (fishNum == 2)
         {
-            scratchTimerStart = 2;
+            scratchStartPromptTime = 2;
             minigameTimer = 20;
             wheelMinSpinPer = 1;
             wheelMaxSpinPer = 20000;
@@ -160,6 +179,8 @@ public class Fishing : MonoBehaviour
         //
         // Display a fail popup
         //
+        Debug.Log("Fail!");
+
         isFishMode = false;
         Invoke("StopFishing", 3);
     }
@@ -168,6 +189,8 @@ public class Fishing : MonoBehaviour
         //
         // Display a Success popup
         //
+        Debug.Log("Success!");
+
         isFishMode = false;
         fishLogEntries[fishNum].SetActive(true);
         Invoke("StopFishing", 3);
