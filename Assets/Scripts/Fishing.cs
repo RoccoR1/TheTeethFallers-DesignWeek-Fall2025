@@ -64,17 +64,13 @@ public class Fishing : MonoBehaviour
                 rotateLeftSymbol.SetActive(true);
                 rotateRightSymbol.SetActive(false);
             }
+
+            //Runs constantly after the timer passes the prompt threshold.
             else if (scratchTimer <= scratchStartPromptTime)
             {
                 float ringWidth = timerRing.GetComponent<RectTransform>().sizeDelta.x;
                 float ringHeight = timerRing.GetComponent<RectTransform>().sizeDelta.y;
                 timerRing.GetComponent<RectTransform>().sizeDelta = new Vector2(ringWidth - (ringHeight * Time.deltaTime), ringHeight - (ringHeight * Time.deltaTime));
-
-                // Check for if the player correctly scratches the disk
-                //if (inputController.movementInputVector.z < 0)
-                //{
-                //    ResetScratchPrompt();
-                //}
             }
 
             if (scratchTimer <= 0)

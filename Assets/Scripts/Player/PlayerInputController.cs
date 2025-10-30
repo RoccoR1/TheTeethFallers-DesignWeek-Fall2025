@@ -17,13 +17,14 @@ public class PlayerInputController : MonoBehaviour
         playerController = GetComponent<PlayerController>();
         fishing = GetComponent<Fishing>();
     }
-
     // Each On____ method corresponds to a input Action.
     private void OnMove(InputValue inputValue)
     {
         movementInputVector = inputValue.Get<Vector3>();
         turntable.transform.Rotate(0,0,turntable.transform.rotation.z + movementInputVector.z * Time.deltaTime * 50);
     }
+
+    // Calls for the inputs assigned to the Action ChangeMode
     private void OnChangeMode(InputValue inputValue)
     {
         isMoveMode = !isMoveMode;
@@ -36,6 +37,8 @@ public class PlayerInputController : MonoBehaviour
             fishing.StopFishing();
         }
     }
+
+    // Opens the log. Activates when input assigned to OpenLog input action is entered.
     private void OnOpenLog()
     {
         // Only opens log if the user isn't fishing.
