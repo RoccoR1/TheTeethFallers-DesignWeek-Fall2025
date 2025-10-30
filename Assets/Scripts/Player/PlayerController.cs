@@ -12,12 +12,15 @@ public class PlayerController : MonoBehaviour
     private float moveSpeed;
     [SerializeField]
     private float rotateSpeed;
+    [SerializeField]
+    private bool canMove;
 
     private PlayerInputController inputController;
     
     private void Awake()
     {
         inputController = GetComponent<PlayerInputController>();
+        canMove = true;
     }
 
     void Update()
@@ -42,5 +45,14 @@ public class PlayerController : MonoBehaviour
     public void OpenLog()
     {
         fishLogCanvas.SetActive(!fishLogCanvas.activeSelf);
+    }
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        canMove = false;
+    }
+    public void OnCollisionExit(Collision collision)
+    {
+        canMove = true;
     }
 }
