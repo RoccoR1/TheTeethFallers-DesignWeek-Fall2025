@@ -43,13 +43,4 @@ public class PlayerController : MonoBehaviour
     {
         fishLogCanvas.SetActive(!fishLogCanvas.activeSelf);
     }
-
-    public void OnCollisionEnter(Collision collision)
-    {
-        
-    }
-    public void OnCollisionExit(Collision collision)
-    {
-        
-    }
 }

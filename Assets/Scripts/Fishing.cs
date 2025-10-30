@@ -27,10 +27,13 @@ public class Fishing : MonoBehaviour
     private float wheelMinSpinPer;
     private float wheelMaxSpinPer;
 
+    public GameObject winText;
+    public GameObject losetext;
     private PlayerController controller;
     private PlayerInputController inputController;
 
     public GameObject[] fishLogEntries;
+    
     void Awake()
     {
         // finds the respective scripts within this script's GameObject.
@@ -162,6 +165,8 @@ public class Fishing : MonoBehaviour
     public void StopFishing()
     {
         ResetScratchPrompt();
+        winText.SetActive(false);
+        losetext.SetActive(false);
         fishingUI.SetActive(false);
         isFishMode = false;
         inputController.isMoveMode = true;
@@ -173,6 +178,9 @@ public class Fishing : MonoBehaviour
         // Display a fail popup
         //
         Debug.Log("Fail!");
+        rotateRightSymbol.SetActive(false);
+        rotateLeftSymbol.SetActive(false);
+        losetext.SetActive(true);
 
         isFishMode = false;
         Invoke("StopFishing", 3);
@@ -183,6 +191,10 @@ public class Fishing : MonoBehaviour
         // Display a Success popup
         //
         Debug.Log("Success!");
+
+        rotateRightSymbol.SetActive(false);
+        rotateLeftSymbol.SetActive(false);
+        winText.SetActive(true);
 
         isFishMode = false;
         fishLogEntries[fishNum].SetActive(true);
