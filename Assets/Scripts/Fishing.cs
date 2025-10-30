@@ -20,6 +20,12 @@ public class Fishing : MonoBehaviour
     public bool isFishMode;
     private Vector2 originalRingSize;
 
+    [SerializeField]
+    private float spinTimeSample;
+    private float wheelRotationDuringSample;
+    private float wheelMinSpinPer;
+    private float wheelMaxSpinPer;
+
     private PlayerController controller;
     private PlayerInputController inputController;
 
@@ -45,7 +51,11 @@ public class Fishing : MonoBehaviour
             scratchTimer -= Time.deltaTime;
             minigameTimer -= Time.deltaTime;
 
-
+            // Record player's motion if record scratch prompt isnt active.
+            if (!hasScratchPrompted)
+            {
+                CheckRotation();
+            }
             // Start the record scratch prompt.
             if (scratchTimer <= 3 && !hasScratchPrompted)
             {
@@ -77,6 +87,23 @@ public class Fishing : MonoBehaviour
             }
         }
     }
+    // This method will check if the player is spinning their turntable enough in a given period of time. If they do not, then they fail. Otherwise fine.
+    private void CheckRotation()
+    {
+        spinTimeSample -= Time.deltaTime;
+        wheelRotationDuringSample += inputController.movementInputVector.z;
+        Debug.Log(wheelRotationDuringSample);
+        if (spinTimeSample <= 0)
+        {
+            // Statement checks to see if the rotation value is within the required range.
+            if (wheelRotationDuringSample <= wheelMinSpinPer || wheelRotationDuringSample >= wheelMaxSpinPer)
+            {
+                Fail();
+            }
+            spinTimeSample = 4;
+            wheelRotationDuringSample = 0;
+        }
+    }
 
     public void ResetScratchPrompt()
     {
@@ -98,18 +125,24 @@ public class Fishing : MonoBehaviour
         {
             scratchTimerStart = 3;
             minigameTimer = 15;
+            wheelMinSpinPer = 1;
+            wheelMaxSpinPer = 20000;
         }
         // Medium
         else if (fishNum == 1)
         {
             scratchTimerStart = 2.5f;
             minigameTimer = 15;
+            wheelMinSpinPer = 1;
+            wheelMaxSpinPer = 20000;
         }
         // Hard
         else if (fishNum == 2)
         {
             scratchTimerStart = 2;
             minigameTimer = 20;
+            wheelMinSpinPer = 1;
+            wheelMaxSpinPer = 20000;
         }
 
         

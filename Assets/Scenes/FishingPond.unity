@@ -1887,6 +1887,7 @@ MonoBehaviour:
   scratchTimer: 0
   minigameTimer: 0
   isFishMode: 0
+  spinTimeSample: 3
   fishLogEntries:
   - {fileID: 2081222171}
   - {fileID: 2085230019}
