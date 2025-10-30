@@ -35,10 +35,10 @@ public class PlayerController : MonoBehaviour
         if (inputController.isMoveMode)
         {
             Vector3 positionChange = new Vector3(inputController.movementInputVector.z * moveSpeed * transform.forward.x, 0, inputController.movementInputVector.z * moveSpeed * transform.forward.z);
-            transform.position += positionChange;
+            transform.position += positionChange * Time.deltaTime;
 
             Vector3 rotationChange = new Vector3(0, inputController.movementInputVector.x * rotateSpeed, 0);
-            transform.Rotate(rotationChange);
+            transform.Rotate(rotationChange * Time.deltaTime);
         }
     }
 
