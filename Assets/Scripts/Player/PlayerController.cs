@@ -6,7 +6,13 @@ public class PlayerController : MonoBehaviour
     public Camera playerCamera;
     public GameObject fishLogCanvas;
     public Transform playerPos;
-    
+
+    // velocity things
+    float rotVel; // rotation velocity
+    float rotAcc; // rotation acceleration
+    public float max_rot_speed; // max rotation speed
+    public float acc_time; // acceleration time
+
     [SerializeField]
     private float moveSpeed;
     [SerializeField]
@@ -31,8 +37,25 @@ public class PlayerController : MonoBehaviour
             Vector3 positionChange = new Vector3(inputController.movementInputVector.z * moveSpeed * transform.forward.x, 0, inputController.movementInputVector.z * moveSpeed * transform.forward.z);
             transform.position += positionChange;
 
-            Vector3 rotationChange = new Vector3(0, inputController.movementInputVector.x * rotateSpeed, 0);
-            transform.Rotate(rotationChange);
+            // acc = max-speed/acc-time
+            rotAcc = max_rot_speed / acc_time;
+
+            //Vector3 rotationChange = new Vector3(0, inputController.movementInputVector.x * rotateSpeed, 0);
+            
+            if (inputController.movementInputVector.x > 0)
+            {
+                rotVel += rotAcc * Time.deltaTime;
+            }
+            if (inputController.movementInputVector.x < 0)
+            {
+                rotVel -= rotAcc * Time.deltaTime;
+            }
+            //rotVel = inputController.movementInputVector.x;
+            //transform.Rotate(rotationChange);
+            Vector3 rotationChange = new Vector3(0, 0, 0);
+            rotationChange.y += rotVel;
+            //SwordTransform.Rotate(0, 0, Svel * Time.deltaTime);
+            transform.Rotate(0, 0, rotVel, Space.Self);
         }
     }
 
