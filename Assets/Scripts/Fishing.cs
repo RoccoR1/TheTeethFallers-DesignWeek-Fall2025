@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Fishing : MonoBehaviour
 {
+    public GameObject fishingRod;
     public GameObject timerRing;
     public GameObject fishingUI;
-    public GameObject[] fishLogEntries;
     
     // Determines which fish is currently being pulled in 
     public int fishNum;
@@ -22,7 +22,8 @@ public class Fishing : MonoBehaviour
 
     private PlayerController controller;
     private PlayerInputController inputController;
-    
+
+    public GameObject[] fishLogEntries;
     void Awake()
     {
         // finds the respective scripts within this script's GameObject.
@@ -44,12 +45,13 @@ public class Fishing : MonoBehaviour
             scratchTimer -= Time.deltaTime;
         }
         
+        // Start the record scratch prompt.
         if (scratchTimer <= 3 && !hasScratchPrompted)
         {
             timerRing.SetActive(true);
             hasScratchPrompted = true;
         }
-        else if (scratchTimer <= 3)
+        else if (scratchTimer <= scratchTimerStart)
         {
             float ringWidth = timerRing.GetComponent<RectTransform>().sizeDelta.x;
             float ringHeight = timerRing.GetComponent<RectTransform>().sizeDelta.y;
@@ -58,7 +60,7 @@ public class Fishing : MonoBehaviour
             // Check for if the player correctly scratches the disk
             if (inputController.movementInputVector.z < 0)
             {
-
+                ResetTimer();
             }
         }
 
@@ -77,22 +79,44 @@ public class Fishing : MonoBehaviour
     }
     public void StartFishing()
     {
+        fishingRod.SetActive(true);
         fishingUI.SetActive(true);
         isFishMode = true;
+        
         fishNum = Random.Range(0, fishLogEntries.Length);
+            
+        // Easy
+        if (fishNum == 0)
+        {
+            scratchTimerStart = 3;
+        }
+        // Medium
+        else if (fishNum == 1)
+        {
+            scratchTimerStart = 2.5f;
+        }
+        // Hard
+        else if (fishNum == 2)
+        {
+            scratchTimerStart = 2;
+        }
     }
     public void StopFishing()
     {
         ResetTimer();
         fishingUI.SetActive(false);
         isFishMode = false;
+        inputController.isMoveMode = true;
+        fishingRod.SetActive(false);
     }
     public void Fail()
     {
         //
         // Display a fail popup
         //
-        Invoke("StopFishing()", 3);
+        fishLogEntries[fishNum].SetActive(true);
+        StopFishing();
+        //Invoke("StopFishing", 3);
     }
     public void Success()
     {
@@ -100,6 +124,13 @@ public class Fishing : MonoBehaviour
         // Display a Success popup
         //
         fishLogEntries[fishNum].SetActive(true);
-        Invoke("StopFishing()", 3);
+        Invoke("StopFishing", 3);
+    }
+
+    // Check method to allow other scripts if fishing is in fish mode.
+    public bool CheckIfFishing()
+    {
+        if (isFishMode) return true;
+        else return false;
     }
 }

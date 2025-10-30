@@ -28,7 +28,7 @@ public class PlayerInputController : MonoBehaviour
     private void OnChangeMode(InputValue inputValue)
     {
         isMoveMode = !isMoveMode;
-        if (!fishing.isFishMode)
+        if (fishing.CheckIfFishing() == false)
         {
             fishing.StartFishing();
         }
@@ -40,7 +40,7 @@ public class PlayerInputController : MonoBehaviour
     private void OnOpenLog()
     {
         // Only opens log if the user isn't fishing.
-        if (!fishing.isFishMode)
+        if (fishing.CheckIfFishing() == false)
         {
             isMoveMode = !isMoveMode;
             playerController.OpenLog();

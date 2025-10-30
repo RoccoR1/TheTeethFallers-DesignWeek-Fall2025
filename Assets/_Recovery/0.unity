@@ -1857,7 +1857,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1158393458
 Transform:
   m_ObjectHideFlags: 0
@@ -2607,7 +2607,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d517c128fe8412c4daf1d2e552b90bfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  fishingRod: {fileID: 1158393457}
   timerRing: {fileID: 33513179}
   fishingUI: {fileID: 1266400111}
   fishNum: 0

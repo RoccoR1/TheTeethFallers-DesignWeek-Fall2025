@@ -38,6 +38,6 @@ public class PlayerController : MonoBehaviour
 
     public void OpenLog()
     {
-        fishLogCanvas.SetActive(!fishLogCanvas.active);
+        fishLogCanvas.SetActive(!fishLogCanvas.activeSelf);
     }
 }
