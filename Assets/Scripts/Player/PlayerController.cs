@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
         //music.Play();
 
         // Keeps camera aligned with boat.
-        playerCamera.gameObject.GetComponent<Transform>().position = new Vector3(playerPos.position.x, playerPos.position.y + 1.75f, playerPos.position.z-1);
+        playerCamera.gameObject.GetComponent<Transform>().position = new Vector3(playerPos.position.x, playerPos.position.y + 1.75f, playerPos.position.z);
         playerCamera.gameObject.GetComponent<Transform>().rotation = playerPos.rotation;
         
         // This will ensure players will not move unless they are in the proper mode.

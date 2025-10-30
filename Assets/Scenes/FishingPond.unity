@@ -2227,9 +2227,8 @@ MonoBehaviour:
   fishLogCanvas: {fileID: 1515224377}
   playerPos: {fileID: 1692573419}
   music: {fileID: 430043906}
-  moveSpeed: 0.001
-  rotateSpeed: 0.3
-  canMove: 0
+  moveSpeed: 0.1
+  rotateSpeed: 20
 --- !u!114 &1692573421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2346,7 +2345,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 116
   m_CollisionDetection: 1
 --- !u!1 &1753800250 stripped
 GameObject:
