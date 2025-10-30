@@ -5,8 +5,17 @@ public class Fishing : MonoBehaviour
     public GameObject timerRing;
     public GameObject fishingUI;
     public GameObject[] fishLogEntries;
+    
+    // Determines which fish is currently being pulled in 
     public int fishNum;
+    
+    // When reaching a threshold, player will need to input the correct spin movement in time.
     public float scratchTimer;
+
+    // Determines when the countdown starts for the scratch timer.
+    private float scratchTimerStart;
+    [SerializeField]
+    private float minigameTimer;
     private bool hasScratchPrompted;
     public bool isFishMode;
     private Vector2 originalRingSize;
@@ -34,6 +43,7 @@ public class Fishing : MonoBehaviour
         {
             scratchTimer -= Time.deltaTime;
         }
+        
         if (scratchTimer <= 3 && !hasScratchPrompted)
         {
             timerRing.SetActive(true);
@@ -44,10 +54,17 @@ public class Fishing : MonoBehaviour
             float ringWidth = timerRing.GetComponent<RectTransform>().sizeDelta.x;
             float ringHeight = timerRing.GetComponent<RectTransform>().sizeDelta.y;
             timerRing.GetComponent<RectTransform>().sizeDelta = new Vector2(ringWidth - (ringHeight * Time.deltaTime), ringHeight - (ringHeight * Time.deltaTime));
+            
+            // Check for if the player correctly scratches the disk
+            if (inputController.movementInputVector.z < 0)
+            {
+
+            }
         }
+
         if (scratchTimer <= 0)
         {
-            ResetTimer();
+            Fail();
         }
     }
 
@@ -62,12 +79,27 @@ public class Fishing : MonoBehaviour
     {
         fishingUI.SetActive(true);
         isFishMode = true;
-        fishNum = Random.Range(0, 2);
+        fishNum = Random.Range(0, fishLogEntries.Length);
     }
     public void StopFishing()
     {
         ResetTimer();
         fishingUI.SetActive(false);
         isFishMode = false;
+    }
+    public void Fail()
+    {
+        //
+        // Display a fail popup
+        //
+        Invoke("StopFishing()", 3);
+    }
+    public void Success()
+    {
+        //
+        // Display a Success popup
+        //
+        fishLogEntries[fishNum].SetActive(true);
+        Invoke("StopFishing()", 3);
     }
 }
