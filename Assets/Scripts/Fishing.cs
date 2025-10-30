@@ -3,7 +3,7 @@ using UnityEngine;
 public class Fishing : MonoBehaviour
 {
     public GameObject fishingRod;
-    public GameObject timerRing;
+    public GameObject fishCDSprite;
     public GameObject fishingUI;
     public GameObject rotateRightSymbol;
     public GameObject rotateLeftSymbol;
@@ -43,8 +43,7 @@ public class Fishing : MonoBehaviour
         // Sets all variables to needed values.
         scratchTimer = Random.Range(5, 10);
         hasScratchPrompted = false;
-        timerRing.SetActive(false);
-        originalRingSize = timerRing.GetComponent<RectTransform>().sizeDelta;
+        originalRingSize = fishCDSprite.GetComponent<RectTransform>().sizeDelta;
         isFishMode = false;
     }
 
@@ -60,7 +59,7 @@ public class Fishing : MonoBehaviour
             // Start the record scratch prompt.
             if (scratchTimer <= 3 && !hasScratchPrompted)
             {
-                timerRing.SetActive(true);
+                fishCDSprite.SetActive(true);
                 hasScratchPrompted = true;
                 spinTimeSample = scratchTimer;
                 wheelRotationDuringSample = 0;
@@ -71,9 +70,14 @@ public class Fishing : MonoBehaviour
             //Runs constantly after the timer passes the prompt threshold.
             else if (scratchTimer <= scratchStartPromptTime)
             {
-                float ringWidth = timerRing.GetComponent<RectTransform>().sizeDelta.x;
-                float ringHeight = timerRing.GetComponent<RectTransform>().sizeDelta.y;
-                timerRing.GetComponent<RectTransform>().sizeDelta = new Vector2(ringWidth - (ringHeight * Time.deltaTime), ringHeight - (ringHeight * Time.deltaTime));
+                //float ringWidth = fishCDSprite.GetComponent<RectTransform>().sizeDelta.x;
+                //float ringHeight = fishCDSprite.GetComponent<RectTransform>().sizeDelta.y;
+                //fishCDSprite.GetComponent<RectTransform>().sizeDelta = new Vector2(ringWidth - (ringHeight * Time.deltaTime), ringHeight - (ringHeight * Time.deltaTime));
+                fishCDSprite.GetComponent<RectTransform>().Rotate(0,0,1);
+            }
+            else
+            {
+                fishCDSprite.GetComponent<RectTransform>().Rotate(0, 0, -1);
             }
 
             if (scratchTimer <= 0)
@@ -122,8 +126,7 @@ public class Fishing : MonoBehaviour
     {
         scratchTimer = Random.Range(5, 10);
         hasScratchPrompted = false;
-        timerRing.SetActive(false);
-        timerRing.GetComponent<RectTransform>().sizeDelta = originalRingSize;
+        fishCDSprite.GetComponent<RectTransform>().sizeDelta = originalRingSize;
         rotateLeftSymbol.SetActive(false);
         rotateRightSymbol.SetActive(true);
     }
@@ -131,6 +134,7 @@ public class Fishing : MonoBehaviour
     {
         fishingRod.SetActive(true);
         fishingUI.SetActive(true);
+        fishCDSprite.SetActive(true);
         isFishMode = true;
         
         fishNum = Random.Range(0, fishLogEntries.Length);
@@ -159,8 +163,6 @@ public class Fishing : MonoBehaviour
             wheelMinSpinPer = 1;
             wheelMaxSpinPer = 20000;
         }
-
-        
     }
     public void StopFishing()
     {
@@ -180,6 +182,7 @@ public class Fishing : MonoBehaviour
         Debug.Log("Fail!");
         rotateRightSymbol.SetActive(false);
         rotateLeftSymbol.SetActive(false);
+        fishCDSprite.SetActive(false);
         losetext.SetActive(true);
 
         isFishMode = false;
@@ -194,6 +197,7 @@ public class Fishing : MonoBehaviour
 
         rotateRightSymbol.SetActive(false);
         rotateLeftSymbol.SetActive(false);
+        fishCDSprite.SetActive(false);
         winText.SetActive(true);
 
         isFishMode = false;
