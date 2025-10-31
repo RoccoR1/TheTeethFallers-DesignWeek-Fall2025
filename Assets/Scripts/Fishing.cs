@@ -1,12 +1,21 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Fishing : MonoBehaviour
 {
     public GameObject fishingRod;
-    public GameObject fishCDSprite;
+
+    // UI Objects
     public GameObject fishingUI;
+    public GameObject waitingText;
+    public GameObject fishCDSprite;
     public GameObject rotateRightSymbol;
     public GameObject rotateLeftSymbol;
+    public GameObject rotateSymbolBkg;
+    public GameObject turnText;
+
+    // Music
     public GameObject boatMusic;
     public GameObject minigameMusic;
 
@@ -16,13 +25,15 @@ public class Fishing : MonoBehaviour
     // When reaching a threshold, player will need to input the correct spin movement in time.
     public float scratchTimer;
 
+    // Timers
     // Determines when the countdown starts for the scratch timer.
     private float scratchStartPromptTime;
     [SerializeField]
     private float minigameTimer;
+
+    // Booleans
     private bool hasScratchPrompted;
     public bool isFishMode;
-    private Vector2 originalRingSize;
 
     [SerializeField]
     private float spinTimeSample;
@@ -46,7 +57,6 @@ public class Fishing : MonoBehaviour
         // Sets all variables to needed values.
         scratchTimer = Random.Range(5, 10);
         hasScratchPrompted = false;
-        originalRingSize = fishCDSprite.GetComponent<RectTransform>().sizeDelta;
         isFishMode = false;
     }
 
@@ -73,9 +83,6 @@ public class Fishing : MonoBehaviour
             //Runs constantly after the timer passes the prompt threshold.
             else if (scratchTimer <= scratchStartPromptTime)
             {
-                //float ringWidth = fishCDSprite.GetComponent<RectTransform>().sizeDelta.x;
-                //float ringHeight = fishCDSprite.GetComponent<RectTransform>().sizeDelta.y;
-                //fishCDSprite.GetComponent<RectTransform>().sizeDelta = new Vector2(ringWidth - (ringHeight * Time.deltaTime), ringHeight - (ringHeight * Time.deltaTime));
                 fishCDSprite.GetComponent<RectTransform>().Rotate(0,0,1);
             }
             else
@@ -98,7 +105,7 @@ public class Fishing : MonoBehaviour
     {
         spinTimeSample -= Time.deltaTime;
         wheelRotationDuringSample += inputController.movementInputVector.z;
-        Debug.Log(wheelRotationDuringSample);
+        //Debug.Log(wheelRotationDuringSample);
         if (spinTimeSample <= 0)
         {
             if (!hasScratchPrompted)
@@ -129,7 +136,6 @@ public class Fishing : MonoBehaviour
     {
         scratchTimer = Random.Range(5, 10);
         hasScratchPrompted = false;
-        fishCDSprite.GetComponent<RectTransform>().sizeDelta = originalRingSize;
         rotateLeftSymbol.SetActive(false);
         rotateRightSymbol.SetActive(true);
     }
@@ -137,37 +143,10 @@ public class Fishing : MonoBehaviour
     {
         fishingRod.SetActive(true);
         fishingUI.SetActive(true);
-        fishCDSprite.SetActive(true);
-        isFishMode = true;
-        
-        fishNum = Random.Range(0, fishLogEntries.Length);
-            
-        // Easy
-        if (fishNum == 0)
-        {
-            scratchStartPromptTime = 3;
-            minigameTimer = 15;
-            wheelMinSpinPer = 1;
-            wheelMaxSpinPer = 20000;
-        }
-        // Medium
-        else if (fishNum == 1)
-        {
-            scratchStartPromptTime = 2.5f;
-            minigameTimer = 15;
-            wheelMinSpinPer = 1;
-            wheelMaxSpinPer = 20000;
-        }
-        // Hard
-        else if (fishNum == 2)
-        {
-            scratchStartPromptTime = 2;
-            minigameTimer = 20;
-            wheelMinSpinPer = 1;
-            wheelMaxSpinPer = 20000;
-        }
-        boatMusic.SetActive(!boatMusic.activeSelf);
-        minigameMusic.SetActive(!minigameMusic.activeSelf);
+        waitingText.SetActive(true);
+        float waitTime = Random.Range(2, 3);
+        Invoke("warnPlayer", waitTime);
+        Invoke("SetupFishing", waitTime + 1);
     }
     public void StopFishing()
     {
@@ -210,6 +189,54 @@ public class Fishing : MonoBehaviour
         isFishMode = false;
         fishLogEntries[fishNum].SetActive(true);
         Invoke("StopFishing", 3);
+    }
+
+    // Informs player that the fishing minigame is about to begin.
+    private void warnPlayer()
+    {
+        waitingText.GetComponent<TextMeshProUGUI>().text = "!";
+    }
+    private void SetupFishing()
+    {
+        // Deactivate waiting text
+        waitingText.SetActive(false);
+        
+        // Actvate all required UI.
+        rotateRightSymbol.SetActive(true);
+        rotateSymbolBkg.SetActive(true);
+        fishCDSprite.SetActive(true);
+        turnText.SetActive(true);
+
+        isFishMode = true;
+
+        fishNum = Random.Range(0, fishLogEntries.Length);
+
+        // Easy
+        if (fishNum == 0)
+        {
+            scratchStartPromptTime = 3;
+            minigameTimer = 15;
+            wheelMinSpinPer = 1;
+            wheelMaxSpinPer = 20000;
+        }
+        // Medium
+        else if (fishNum == 1)
+        {
+            scratchStartPromptTime = 2.5f;
+            minigameTimer = 15;
+            wheelMinSpinPer = 1;
+            wheelMaxSpinPer = 20000;
+        }
+        // Hard
+        else if (fishNum == 2)
+        {
+            scratchStartPromptTime = 2;
+            minigameTimer = 20;
+            wheelMinSpinPer = 1;
+            wheelMaxSpinPer = 20000;
+        }
+        boatMusic.SetActive(!boatMusic.activeSelf);
+        minigameMusic.SetActive(!minigameMusic.activeSelf);
     }
 
     // Check method to allow other scripts if fishing is in fish mode.

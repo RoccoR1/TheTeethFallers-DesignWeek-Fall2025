@@ -13,10 +13,12 @@ public class MenuController : MonoBehaviour
         if (controlNum == 0)
         {
             //Make 0 be turntable rotation = movement forward/back
+            //PlayerController.isTurntableRotationMoveSideways = false;
         }
         else if (controlNum == 1)
         {
             // Make 1 be turntable rotation = boat rotation
+            //PlayerController.isTurntableRotationMoveSideways = true;
         }
     }
 }
