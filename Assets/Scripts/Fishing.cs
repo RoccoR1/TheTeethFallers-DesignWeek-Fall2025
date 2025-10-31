@@ -182,8 +182,8 @@ public class Fishing : MonoBehaviour
         isFishMode = false;
         inputController.isMoveMode = true;
         fishingRod.SetActive(false); 
-        boatMusic.SetActive(!boatMusic.activeSelf);
-        minigameMusic.SetActive(!minigameMusic.activeSelf);
+        boatMusic.SetActive(true);
+        minigameMusic.SetActive(false);
 
         fish.SetActive(false);
     }
@@ -197,6 +197,9 @@ public class Fishing : MonoBehaviour
         rotateLeftSymbol.SetActive(false);
         fishCDSprite.SetActive(false);
         losetext.SetActive(true);
+
+        //minigameMusic.SetActive(false);
+        //boatMusic.SetActive(true);
 
         isFishMode = false;
         Invoke("StopFishing", 3);
