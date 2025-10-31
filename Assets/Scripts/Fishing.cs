@@ -16,6 +16,7 @@ public class Fishing : MonoBehaviour
     public GameObject rotateLeftSymbol;
     public GameObject rotateSymbolBkg;
     public GameObject turnText;
+    public GameObject timerText;
 
     // Music
     public GameObject boatMusic;
@@ -30,8 +31,7 @@ public class Fishing : MonoBehaviour
     // Timers
     // Determines when the countdown starts for the scratch timer.
     private float scratchStartPromptTime;
-    [SerializeField]
-    private float minigameTimer;
+    public float minigameTimer;
 
     // Booleans
     private bool hasScratchPrompted;
@@ -71,6 +71,7 @@ public class Fishing : MonoBehaviour
         rotateSymbolBkg.SetActive(false);
         fishCDSprite.SetActive(false);
         turnText.SetActive(false);
+        timerText.SetActive(false);
         fishingUI.SetActive(false);
     }
 
@@ -80,6 +81,7 @@ public class Fishing : MonoBehaviour
         {
             scratchTimer -= Time.deltaTime;
             minigameTimer -= Time.deltaTime;
+            timerText.GetComponent<TextMeshProUGUI>().text = minigameTimer.ToString();
 
             CheckRotation();
 
@@ -132,6 +134,7 @@ public class Fishing : MonoBehaviour
             }
             else
             {
+                // Only requires spinning in negative direction any amount
                 if (wheelRotationDuringSample > 0)
                 {
                     Fail();
@@ -141,8 +144,6 @@ public class Fishing : MonoBehaviour
                     ResetScratchPrompt();
                 }
             }
-            spinTimeSample = 4;
-            wheelRotationDuringSample = 0;
         }
     }
 
@@ -152,6 +153,8 @@ public class Fishing : MonoBehaviour
         hasScratchPrompted = false;
         rotateLeftSymbol.SetActive(false);
         rotateRightSymbol.SetActive(true);
+        spinTimeSample = 4;
+        wheelRotationDuringSample = 0;
     }
     public void StartFishing()
     {
@@ -165,14 +168,15 @@ public class Fishing : MonoBehaviour
     public void StopFishing()
     {
         ResetScratchPrompt();
+
+        // Deactvate all required UI.
         winText.SetActive(false);
         losetext.SetActive(false);
-
-        // Actvate all required UI.
         rotateRightSymbol.SetActive(false);
         rotateSymbolBkg.SetActive(false);
         fishCDSprite.SetActive(false);
         turnText.SetActive(false);
+        timerText.SetActive(false);
         fishingUI.SetActive(false);
 
         isFishMode = false;
@@ -180,6 +184,8 @@ public class Fishing : MonoBehaviour
         fishingRod.SetActive(false); 
         boatMusic.SetActive(!boatMusic.activeSelf);
         minigameMusic.SetActive(!minigameMusic.activeSelf);
+
+        fish.SetActive(false);
     }
     public void Fail()
     {
@@ -229,6 +235,7 @@ public class Fishing : MonoBehaviour
         rotateSymbolBkg.SetActive(true);
         fishCDSprite.SetActive(true);
         turnText.SetActive(true);
+        timerText.SetActive(true);
 
         isFishMode = true;
 
@@ -238,7 +245,7 @@ public class Fishing : MonoBehaviour
         if (fishNum == 0)
         {
             scratchStartPromptTime = 3;
-            minigameTimer = 15;
+            minigameTimer = 12;
             wheelMinSpinPer = 1;
             wheelMaxSpinPer = 20000;
             fishBody.material.color = Color.yellow;
@@ -249,8 +256,8 @@ public class Fishing : MonoBehaviour
         {
             scratchStartPromptTime = 2.5f;
             minigameTimer = 15;
-            wheelMinSpinPer = 1;
-            wheelMaxSpinPer = 20000;
+            wheelMinSpinPer = 500;
+            wheelMaxSpinPer = 15000;
             fishBody.material.color = Color.lightGoldenRod;
         }
         // Hard
@@ -258,12 +265,13 @@ public class Fishing : MonoBehaviour
         {
             scratchStartPromptTime = 2;
             minigameTimer = 20;
-            wheelMinSpinPer = 1;
-            wheelMaxSpinPer = 20000;
+            wheelMinSpinPer = 1000;
+            wheelMaxSpinPer = 10000;
             fishBody.material.color = Color.pink;
         }
         //Place fish in correct location.
-        fish.transform.position = new Vector3 (this.transform.position.x, this.transform.position.y - 8, this.transform.position.z + 10);
+        fish.transform.position = new Vector3 (this.transform.position.x + (this.transform.forward.x * 10), this.transform.position.y - 8, this.transform.position.z + this.transform.forward.z * 10);
+        fish.transform.rotation = this.transform.rotation;
         fish.SetActive(true);
 
         boatMusic.SetActive(!boatMusic.activeSelf);
