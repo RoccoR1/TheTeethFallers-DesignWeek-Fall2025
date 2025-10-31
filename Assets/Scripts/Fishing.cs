@@ -5,6 +5,8 @@ using UnityEngine.UI;
 public class Fishing : MonoBehaviour
 {
     public GameObject fishingRod;
+    public GameObject fish;
+    public MeshRenderer fishBody; // Use this to set the material.
 
     // UI Objects
     public GameObject fishingUI;
@@ -47,7 +49,7 @@ public class Fishing : MonoBehaviour
     private PlayerInputController inputController;
 
     public GameObject[] fishLogEntries;
-    
+    public TextMeshProUGUI[] fishLogCount;
     void Awake()
     {
         // finds the respective scripts within this script's GameObject.
@@ -58,6 +60,18 @@ public class Fishing : MonoBehaviour
         scratchTimer = Random.Range(5, 10);
         hasScratchPrompted = false;
         isFishMode = false;
+
+        // Ensure models start off as disabled.
+        fish.SetActive(false);
+        fishingRod.SetActive(false);
+        
+        // Ensure all required UI is deactivated.
+        rotateLeftSymbol.SetActive(false);
+        rotateRightSymbol.SetActive(false);
+        rotateSymbolBkg.SetActive(false);
+        fishCDSprite.SetActive(false);
+        turnText.SetActive(false);
+        fishingUI.SetActive(false);
     }
 
     void Update()
@@ -153,7 +167,14 @@ public class Fishing : MonoBehaviour
         ResetScratchPrompt();
         winText.SetActive(false);
         losetext.SetActive(false);
+
+        // Actvate all required UI.
+        rotateRightSymbol.SetActive(false);
+        rotateSymbolBkg.SetActive(false);
+        fishCDSprite.SetActive(false);
+        turnText.SetActive(false);
         fishingUI.SetActive(false);
+
         isFishMode = false;
         inputController.isMoveMode = true;
         fishingRod.SetActive(false); 
@@ -188,6 +209,7 @@ public class Fishing : MonoBehaviour
 
         isFishMode = false;
         fishLogEntries[fishNum].SetActive(true);
+        fishLogCount[fishNum].text = (int.Parse(fishLogCount[fishNum].text) + 1).ToString();
         Invoke("StopFishing", 3);
     }
 
@@ -198,7 +220,8 @@ public class Fishing : MonoBehaviour
     }
     private void SetupFishing()
     {
-        // Deactivate waiting text
+        // Change waiting text back to dots, and deactivate it.
+        waitingText.GetComponent<TextMeshProUGUI>().text = ". . .";
         waitingText.SetActive(false);
         
         // Actvate all required UI.
@@ -218,6 +241,8 @@ public class Fishing : MonoBehaviour
             minigameTimer = 15;
             wheelMinSpinPer = 1;
             wheelMaxSpinPer = 20000;
+            fishBody.material.color = Color.yellow;
+            
         }
         // Medium
         else if (fishNum == 1)
@@ -226,6 +251,7 @@ public class Fishing : MonoBehaviour
             minigameTimer = 15;
             wheelMinSpinPer = 1;
             wheelMaxSpinPer = 20000;
+            fishBody.material.color = Color.lightGoldenRod;
         }
         // Hard
         else if (fishNum == 2)
@@ -234,7 +260,12 @@ public class Fishing : MonoBehaviour
             minigameTimer = 20;
             wheelMinSpinPer = 1;
             wheelMaxSpinPer = 20000;
+            fishBody.material.color = Color.pink;
         }
+        //Place fish in correct location.
+        fish.transform.position = new Vector3 (this.transform.position.x, this.transform.position.y - 8, this.transform.position.z + 10);
+        fish.SetActive(true);
+
         boatMusic.SetActive(!boatMusic.activeSelf);
         minigameMusic.SetActive(!minigameMusic.activeSelf);
     }
