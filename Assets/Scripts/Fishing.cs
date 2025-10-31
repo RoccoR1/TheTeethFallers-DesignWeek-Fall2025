@@ -198,9 +198,6 @@ public class Fishing : MonoBehaviour
         fishCDSprite.SetActive(false);
         losetext.SetActive(true);
 
-        //minigameMusic.SetActive(false);
-        //boatMusic.SetActive(true);
-
         isFishMode = false;
         Invoke("StopFishing", 3);
     }
@@ -257,7 +254,7 @@ public class Fishing : MonoBehaviour
         // Medium
         else if (fishNum == 1)
         {
-            scratchStartPromptTime = 2.5f;
+            scratchStartPromptTime = 2.75f;
             minigameTimer = 15;
             wheelMinSpinPer = 500;
             wheelMaxSpinPer = 15000;
@@ -266,11 +263,38 @@ public class Fishing : MonoBehaviour
         // Hard
         else if (fishNum == 2)
         {
+            scratchStartPromptTime = 2.5f;
+            minigameTimer = 16;
+            wheelMinSpinPer = 1000;
+            wheelMaxSpinPer = 10000;
+            fishBody.material.color = Color.pink;
+        }
+        // Hard
+        else if (fishNum == 3)
+        {
+            scratchStartPromptTime = 2.25f;
+            minigameTimer = 18;
+            wheelMinSpinPer = 1000;
+            wheelMaxSpinPer = 10000;
+            fishBody.material.color = Color.indianRed;
+        }
+        // Hard
+        else if (fishNum == 4)
+        {
             scratchStartPromptTime = 2;
             minigameTimer = 20;
             wheelMinSpinPer = 1000;
             wheelMaxSpinPer = 10000;
-            fishBody.material.color = Color.pink;
+            fishBody.material.color = Color.purple;
+        }
+        // Hard
+        else if (fishNum == 5)
+        {
+            scratchStartPromptTime = 1.5f;
+            minigameTimer = 20;
+            wheelMinSpinPer = 1000;
+            wheelMaxSpinPer = 10000;
+            fishBody.material.color = Color.green;
         }
         //Place fish in correct location.
         fish.transform.position = new Vector3 (this.transform.position.x + (this.transform.forward.x * 6), this.transform.position.y - 8, this.transform.position.z + this.transform.forward.z * 6);
