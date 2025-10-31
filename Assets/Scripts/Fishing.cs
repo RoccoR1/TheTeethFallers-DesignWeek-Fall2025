@@ -127,7 +127,7 @@ public class Fishing : MonoBehaviour
             if (!hasScratchPrompted)
             {
                 // Statement checks to see if the rotation value is within the required range.
-                if (wheelRotationDuringSample <= wheelMinSpinPer || wheelRotationDuringSample >= wheelMaxSpinPer)
+                if (wheelRotationDuringSample <= wheelMinSpinPer /*|| wheelRotationDuringSample >= wheelMaxSpinPer*/)
                 {
                     Fail();
                 }
@@ -273,7 +273,7 @@ public class Fishing : MonoBehaviour
             fishBody.material.color = Color.pink;
         }
         //Place fish in correct location.
-        fish.transform.position = new Vector3 (this.transform.position.x + (this.transform.forward.x * 10), this.transform.position.y - 8, this.transform.position.z + this.transform.forward.z * 10);
+        fish.transform.position = new Vector3 (this.transform.position.x + (this.transform.forward.x * 6), this.transform.position.y - 8, this.transform.position.z + this.transform.forward.z * 6);
         fish.transform.rotation = this.transform.rotation;
         fish.SetActive(true);
 
