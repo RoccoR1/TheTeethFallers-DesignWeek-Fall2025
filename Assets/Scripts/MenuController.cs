@@ -16,7 +16,7 @@ public class MenuController : MonoBehaviour
         }
         else if (controlNum == 1)
         {
-            // Make 0 be turntable rotation = boat rotation
+            // Make 1 be turntable rotation = boat rotation
         }
     }
 }

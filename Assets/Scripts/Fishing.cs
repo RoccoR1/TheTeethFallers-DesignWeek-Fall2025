@@ -7,6 +7,9 @@ public class Fishing : MonoBehaviour
     public GameObject fishingUI;
     public GameObject rotateRightSymbol;
     public GameObject rotateLeftSymbol;
+    public GameObject boatMusic;
+    public GameObject minigameMusic;
+
     // Determines which fish is currently being pulled in 
     public int fishNum;
     
@@ -163,6 +166,8 @@ public class Fishing : MonoBehaviour
             wheelMinSpinPer = 1;
             wheelMaxSpinPer = 20000;
         }
+        boatMusic.SetActive(!boatMusic.activeSelf);
+        minigameMusic.SetActive(!minigameMusic.activeSelf);
     }
     public void StopFishing()
     {
@@ -172,7 +177,9 @@ public class Fishing : MonoBehaviour
         fishingUI.SetActive(false);
         isFishMode = false;
         inputController.isMoveMode = true;
-        fishingRod.SetActive(false);
+        fishingRod.SetActive(false); 
+        boatMusic.SetActive(!boatMusic.activeSelf);
+        minigameMusic.SetActive(!minigameMusic.activeSelf);
     }
     public void Fail()
     {
