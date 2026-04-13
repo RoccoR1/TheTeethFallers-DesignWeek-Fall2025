@@ -1,48 +1,35 @@
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    // This will control if the turntable moves the player forwards or rotates their boat.
-    //public static bool isTurntableRotationMoveSideways;
-
     public Camera playerCamera;
     public GameObject fishLogCanvas;
     public Transform playerPos;
 
-    [SerializeField]
-    private float moveSpeed;
-    [SerializeField]
-    private float rotateSpeed;
+    [Header("Movement Settings")]
+    [SerializeField] private float moveSpeed = 10f;
+    [SerializeField] private float rotateSpeed = 100f;
+    [Range(0, 1)]
+    [SerializeField] private float rowingThreshold = 0.5f; // Only play sound if push is this strong
 
     private PlayerInputController inputController;
-    
+    private bool canRow = true;
+
     private void Awake()
     {
         inputController = GetComponent<PlayerInputController>();
-        /*if (isTurntableRotationMoveSideways)
-        {
-            rotateSpeed = 20;
-            moveSpeed = 0.1f;
-        }
-        else
-        {
-            rotateSpeed = 100;
-            moveSpeed = 10;
-        }
-        Debug.Log(isTurntableRotationMoveSideways);*/
     }
 
     void Update()
     {
-        //music.Play();
+        if (playerPos != null && playerCamera != null)
+        {
+            playerCamera.transform.position = new Vector3(playerPos.position.x, playerPos.position.y + 1.75f, playerPos.position.z);
+            playerCamera.transform.rotation = playerPos.rotation;
+        }
 
-        // Keeps camera aligned with boat.
-        playerCamera.gameObject.GetComponent<Transform>().position = new Vector3(playerPos.position.x, playerPos.position.y + 1.75f, playerPos.position.z);
-        playerCamera.gameObject.GetComponent<Transform>().rotation = playerPos.rotation;
-        
-        // This will ensure players will not move unless they are in the proper mode. whether it pulls
-        if (inputController.isMoveMode/* && isTurntableRotationMoveSideways*/)
+        if (inputController.isMoveMode)
         {
             Vector3 positionChange = new Vector3(inputController.movementInputVector.z * moveSpeed * transform.forward.x, 0, inputController.movementInputVector.z * moveSpeed * transform.forward.z);
             transform.position += positionChange * Time.deltaTime;
@@ -50,18 +37,34 @@ public class PlayerController : MonoBehaviour
             Vector3 rotationChange = new Vector3(0, inputController.movementInputVector.x * rotateSpeed, 0);
             transform.Rotate(rotationChange * Time.deltaTime);
         }
-        /*else if (inputController.isMoveMode && isTurntableRotationMoveSideways == false)
-        {
-            Vector3 positionChange = new Vector3(inputController.movementInputVector.x * moveSpeed * transform.forward.x, 0, inputController.movementInputVector.z * moveSpeed * transform.forward.z);
-            transform.position += positionChange * Time.deltaTime;
+    }
 
-            Vector3 rotationChange = new Vector3(0, inputController.movementInputVector.z * rotateSpeed, 0);
-            transform.Rotate(rotationChange * Time.deltaTime);
-        }*/
+    public void AttemptRowing(float inputZ)
+    {
+        // Now requires a stronger push (Threshold) AND the 3-second cooldown
+        if (inputZ > rowingThreshold && canRow)
+        {
+            StartCoroutine(RowingCooldownSequence());
+        }
+    }
+
+    IEnumerator RowingCooldownSequence()
+    {
+        canRow = false;
+
+        // Play the sound
+        FMODUnity.RuntimeManager.PlayOneShot("event:/rowing");
+        Debug.Log("Rowing stroke performed!");
+
+        // Wait 3 seconds - this ensures a smooth rhythm
+        yield return new WaitForSeconds(3f);
+
+        canRow = true;
     }
 
     public void OpenLog()
     {
-        fishLogCanvas.SetActive(!fishLogCanvas.activeSelf);
+        if (fishLogCanvas != null)
+            fishLogCanvas.SetActive(!fishLogCanvas.activeSelf);
     }
 }

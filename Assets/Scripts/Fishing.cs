@@ -4,11 +4,10 @@ using UnityEngine.UI;
 
 public class Fishing : MonoBehaviour
 {
+    [Header("Models & UI")]
     public GameObject fishingRod;
     public GameObject fish;
-    public MeshRenderer fishBody; // Use this to set the material.
-
-    // UI Objects
+    public MeshRenderer fishBody;
     public GameObject fishingUI;
     public GameObject waitingText;
     public GameObject fishCDSprite;
@@ -17,75 +16,70 @@ public class Fishing : MonoBehaviour
     public GameObject rotateSymbolBkg;
     public GameObject turnText;
     public GameObject timerText;
+    public GameObject winText;
+    public GameObject losetext;
 
-    // Music
-    public GameObject boatMusic;
-    public GameObject minigameMusic;
+    [Header("FMOD Settings")]
+    public string musicEventPath = "event:/Music";
+    [Range(0f, 1f)]
+    public float musicVolume = 0.5f; // Set this in the Inspector! 1.0 is full, 0.0 is silent.
+    private FMOD.Studio.EventInstance musicInstance;
 
-    // Determines which fish is currently being pulled in 
+    [Header("Minigame Settings")]
     public int fishNum;
-    
-    // When reaching a threshold, player will need to input the correct spin movement in time.
     public float scratchTimer;
-
-    // Timers
-    // Determines when the countdown starts for the scratch timer.
     private float scratchStartPromptTime;
     public float minigameTimer;
-
-    // Booleans
-    private bool hasScratchPrompted;
     public bool isFishMode;
+    private bool hasScratchPrompted;
 
-    [SerializeField]
-    private float spinTimeSample;
+    [SerializeField] private float spinTimeSample;
     private float wheelRotationDuringSample;
     private float wheelMinSpinPer;
     private float wheelMaxSpinPer;
 
-    public GameObject winText;
-    public GameObject losetext;
+    [Header("Player References")]
     private PlayerController controller;
     private PlayerInputController inputController;
-
     public GameObject[] fishLogEntries;
     public TextMeshProUGUI[] fishLogCount;
+
+    private float reelingSfxTimer;
+    private float reelingSfxInterval = 0.2f;
+
     void Awake()
     {
-        // finds the respective scripts within this script's GameObject.
         controller = GetComponent<PlayerController>();
         inputController = GetComponent<PlayerInputController>();
-
-        // Sets all variables to needed values.
-        scratchTimer = Random.Range(5, 10);
-        hasScratchPrompted = false;
         isFishMode = false;
-
-        // Ensure models start off as disabled.
         fish.SetActive(false);
         fishingRod.SetActive(false);
-        
-        // Ensure all required UI is deactivated.
-        rotateLeftSymbol.SetActive(false);
-        rotateRightSymbol.SetActive(false);
-        rotateSymbolBkg.SetActive(false);
-        fishCDSprite.SetActive(false);
-        turnText.SetActive(false);
-        timerText.SetActive(false);
         fishingUI.SetActive(false);
+    }
+
+    void Start()
+    {
+        musicInstance = FMODUnity.RuntimeManager.CreateInstance(musicEventPath);
+
+        // --- VOLUME CONTROL ---
+        musicInstance.setVolume(musicVolume);
+
+        musicInstance.start();
+        musicInstance.setParameterByName("IsFishing", 0f);
     }
 
     void Update()
     {
+        // Keep the volume synced with the Inspector value in real-time
+        musicInstance.setVolume(musicVolume);
+
         if (isFishMode)
         {
             scratchTimer -= Time.deltaTime;
             minigameTimer -= Time.deltaTime;
-            timerText.GetComponent<TextMeshProUGUI>().text = minigameTimer.ToString();
-
+            timerText.GetComponent<TextMeshProUGUI>().text = minigameTimer.ToString("F2");
             CheckRotation();
 
-            // Start the record scratch prompt.
             if (scratchTimer <= 3 && !hasScratchPrompted)
             {
                 fishCDSprite.SetActive(true);
@@ -95,54 +89,42 @@ public class Fishing : MonoBehaviour
                 rotateLeftSymbol.SetActive(true);
                 rotateRightSymbol.SetActive(false);
             }
-
-            //Runs constantly after the timer passes the prompt threshold.
             else if (scratchTimer <= scratchStartPromptTime)
             {
-                fishCDSprite.GetComponent<RectTransform>().Rotate(0,0,1);
+                fishCDSprite.GetComponent<RectTransform>().Rotate(0, 0, 1);
             }
             else
             {
                 fishCDSprite.GetComponent<RectTransform>().Rotate(0, 0, -1);
             }
 
-            if (scratchTimer <= 0)
-            {
-                Fail();
-            }
-            if (minigameTimer <= 0)
-            {
-                Success();
-            }
+            if (scratchTimer <= 0) Fail();
+            if (minigameTimer <= 0) Success();
         }
     }
-    // This method will check if the player is spinning their turntable enough in a given period of time. If they do not, then they fail. Otherwise fine.
+
     private void CheckRotation()
     {
         spinTimeSample -= Time.deltaTime;
-        wheelRotationDuringSample += inputController.movementInputVector.z;
-        //Debug.Log(wheelRotationDuringSample);
+        float rotationInput = inputController.movementInputVector.z;
+        wheelRotationDuringSample += rotationInput;
+
+        if (Mathf.Abs(rotationInput) > 0.1f && Time.time > reelingSfxTimer)
+        {
+            FMODUnity.RuntimeManager.PlayOneShot("event:/Reel SFX");
+            reelingSfxTimer = Time.time + reelingSfxInterval;
+        }
+
         if (spinTimeSample <= 0)
         {
             if (!hasScratchPrompted)
             {
-                // Statement checks to see if the rotation value is within the required range.
-                if (wheelRotationDuringSample <= wheelMinSpinPer /*|| wheelRotationDuringSample >= wheelMaxSpinPer*/)
-                {
-                    Fail();
-                }
+                if (wheelRotationDuringSample <= wheelMinSpinPer) Fail();
             }
             else
             {
-                // Only requires spinning in negative direction any amount
-                if (wheelRotationDuringSample > 0)
-                {
-                    Fail();
-                }
-                else
-                {
-                    ResetScratchPrompt();
-                }
+                if (wheelRotationDuringSample > 0) Fail();
+                else ResetScratchPrompt();
             }
         }
     }
@@ -156,6 +138,7 @@ public class Fishing : MonoBehaviour
         spinTimeSample = 4;
         wheelRotationDuringSample = 0;
     }
+
     public void StartFishing()
     {
         fishingRod.SetActive(true);
@@ -165,11 +148,10 @@ public class Fishing : MonoBehaviour
         Invoke("warnPlayer", waitTime);
         Invoke("SetupFishing", waitTime + 1);
     }
+
     public void StopFishing()
     {
         ResetScratchPrompt();
-
-        // Deactvate all required UI.
         winText.SetActive(false);
         losetext.SetActive(false);
         rotateRightSymbol.SetActive(false);
@@ -181,56 +163,42 @@ public class Fishing : MonoBehaviour
 
         isFishMode = false;
         inputController.isMoveMode = true;
-        fishingRod.SetActive(false); 
-        boatMusic.SetActive(true);
-        minigameMusic.SetActive(false);
-
+        fishingRod.SetActive(false);
         fish.SetActive(false);
+
+        musicInstance.setParameterByName("IsFishing", 0f);
     }
+
     public void Fail()
     {
-        //
-        // Display a fail popup
-        //
-        Debug.Log("Fail!");
+        FMODUnity.RuntimeManager.PlayOneShot("event:/fish fail");
         rotateRightSymbol.SetActive(false);
         rotateLeftSymbol.SetActive(false);
         fishCDSprite.SetActive(false);
         losetext.SetActive(true);
-
         isFishMode = false;
         Invoke("StopFishing", 3);
     }
+
     public void Success()
     {
-        //
-        // Display a Success popup
-        //
-        Debug.Log("Success!");
-
+        FMODUnity.RuntimeManager.PlayOneShot("event:/fish dialogue catch");
         rotateRightSymbol.SetActive(false);
         rotateLeftSymbol.SetActive(false);
         fishCDSprite.SetActive(false);
         winText.SetActive(true);
-
         isFishMode = false;
         fishLogEntries[fishNum].SetActive(true);
         fishLogCount[fishNum].text = (int.Parse(fishLogCount[fishNum].text) + 1).ToString();
         Invoke("StopFishing", 3);
     }
 
-    // Informs player that the fishing minigame is about to begin.
-    private void warnPlayer()
-    {
-        waitingText.GetComponent<TextMeshProUGUI>().text = "!";
-    }
+    private void warnPlayer() => waitingText.GetComponent<TextMeshProUGUI>().text = "!";
+
     private void SetupFishing()
     {
-        // Change waiting text back to dots, and deactivate it.
         waitingText.GetComponent<TextMeshProUGUI>().text = ". . .";
         waitingText.SetActive(false);
-        
-        // Actvate all required UI.
         rotateRightSymbol.SetActive(true);
         rotateSymbolBkg.SetActive(true);
         fishCDSprite.SetActive(true);
@@ -238,77 +206,29 @@ public class Fishing : MonoBehaviour
         timerText.SetActive(true);
 
         isFishMode = true;
-
         fishNum = Random.Range(0, fishLogEntries.Length);
 
-        // Easy
-        if (fishNum == 0)
-        {
-            scratchStartPromptTime = 3;
-            minigameTimer = 12;
-            wheelMinSpinPer = 1;
-            wheelMaxSpinPer = 20000;
-            fishBody.material.color = Color.yellow;
-            
-        }
-        // Medium
-        else if (fishNum == 1)
-        {
-            scratchStartPromptTime = 2.75f;
-            minigameTimer = 15;
-            wheelMinSpinPer = 500;
-            wheelMaxSpinPer = 15000;
-            fishBody.material.color = Color.lightGoldenRod;
-        }
-        // Hard
-        else if (fishNum == 2)
-        {
-            scratchStartPromptTime = 2.5f;
-            minigameTimer = 16;
-            wheelMinSpinPer = 1000;
-            wheelMaxSpinPer = 10000;
-            fishBody.material.color = Color.pink;
-        }
-        // Hard
-        else if (fishNum == 3)
-        {
-            scratchStartPromptTime = 2.25f;
-            minigameTimer = 18;
-            wheelMinSpinPer = 1000;
-            wheelMaxSpinPer = 10000;
-            fishBody.material.color = Color.indianRed;
-        }
-        // Hard
-        else if (fishNum == 4)
-        {
-            scratchStartPromptTime = 2;
-            minigameTimer = 20;
-            wheelMinSpinPer = 1000;
-            wheelMaxSpinPer = 10000;
-            fishBody.material.color = Color.purple;
-        }
-        // Hard
-        else if (fishNum == 5)
-        {
-            scratchStartPromptTime = 1.5f;
-            minigameTimer = 20;
-            wheelMinSpinPer = 1000;
-            wheelMaxSpinPer = 10000;
-            fishBody.material.color = Color.green;
-        }
-        //Place fish in correct location.
-        fish.transform.position = new Vector3 (this.transform.position.x + (this.transform.forward.x * 6), this.transform.position.y - 8, this.transform.position.z + this.transform.forward.z * 6);
+        musicInstance.setParameterByName("IsFishing", 1f);
+
+        // Difficulty Settings
+        if (fishNum == 0) { scratchStartPromptTime = 3; minigameTimer = 12; wheelMinSpinPer = 1; fishBody.material.color = Color.yellow; }
+        else if (fishNum == 1) { scratchStartPromptTime = 2.75f; minigameTimer = 15; wheelMinSpinPer = 500; fishBody.material.color = new Color(0.85f, 0.74f, 0.42f); }
+        else if (fishNum == 2) { scratchStartPromptTime = 2.5f; minigameTimer = 16; wheelMinSpinPer = 1000; fishBody.material.color = Color.pink; }
+        else if (fishNum == 3) { scratchStartPromptTime = 2.25f; minigameTimer = 18; wheelMinSpinPer = 1000; fishBody.material.color = new Color(0.8f, 0.36f, 0.36f); }
+        else if (fishNum == 4) { scratchStartPromptTime = 2f; minigameTimer = 20; wheelMinSpinPer = 1000; fishBody.material.color = new Color(0.5f, 0f, 0.5f); }
+        else if (fishNum == 5) { scratchStartPromptTime = 1.5f; minigameTimer = 20; wheelMinSpinPer = 1000; fishBody.material.color = Color.green; }
+
+        FMODUnity.RuntimeManager.PlayOneShot("event:/fish dialogue 1");
+        fish.transform.position = this.transform.position + (this.transform.forward * 6) + (Vector3.down * 8);
         fish.transform.rotation = this.transform.rotation;
         fish.SetActive(true);
-
-        boatMusic.SetActive(!boatMusic.activeSelf);
-        minigameMusic.SetActive(!minigameMusic.activeSelf);
     }
 
-    // Check method to allow other scripts if fishing is in fish mode.
-    public bool CheckIfFishing()
+    private void OnDestroy()
     {
-        if (isFishMode) return true;
-        else return false;
+        musicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        musicInstance.release();
     }
+
+    public bool CheckIfFishing() => isFishMode;
 }

@@ -1,13 +1,12 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class PlayerInputController : MonoBehaviour
 {
     public GameObject turntable;
     public Vector3 movementInputVector { get; private set; }
     public bool isMoveMode;
+
     private PlayerController playerController;
     private Fishing fishing;
 
@@ -17,33 +16,41 @@ public class PlayerInputController : MonoBehaviour
         playerController = GetComponent<PlayerController>();
         fishing = GetComponent<Fishing>();
     }
-    
-    // Each On____ method corresponds to a input Action.
+
     private void OnMove(InputValue inputValue)
     {
-        movementInputVector = inputValue.Get<Vector3>();
-        turntable.transform.Rotate(0,0,turntable.transform.rotation.z + movementInputVector.z * Time.deltaTime * 50);
+        Vector3 rawInput = inputValue.Get<Vector3>();
+
+        // Deadzone: If input is tiny, just make it zero to avoid "ghost" sounds
+        if (rawInput.magnitude < 0.1f) rawInput = Vector3.zero;
+
+        movementInputVector = rawInput;
+
+        if (isMoveMode)
+        {
+            if (turntable != null)
+            {
+                turntable.transform.Rotate(0, 0, movementInputVector.z * Time.deltaTime * 50);
+            }
+
+            // This sends the data to the threshold check
+            playerController.AttemptRowing(movementInputVector.z);
+        }
     }
 
-    // Calls for the inputs assigned to the Action ChangeMode
     private void OnChangeMode(InputValue inputValue)
     {
         isMoveMode = !isMoveMode;
-        if (fishing.CheckIfFishing() == false)
+        if (fishing != null)
         {
-            fishing.StartFishing();
-        }
-        else
-        {
-            fishing.StopFishing();
+            if (!fishing.CheckIfFishing()) fishing.StartFishing();
+            else fishing.StopFishing();
         }
     }
 
-    // Opens the log. Activates when input assigned to OpenLog input action is entered.
     private void OnOpenLog()
     {
-        // Only opens log if the user isn't fishing.
-        if (fishing.CheckIfFishing() == false)
+        if (fishing != null && !fishing.CheckIfFishing())
         {
             isMoveMode = !isMoveMode;
             playerController.OpenLog();
